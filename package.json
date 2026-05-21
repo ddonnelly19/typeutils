@@ -8,11 +8,14 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"import": "./dist/index.js"
+		},
+		"./globals": {
+			"types": "./dist/globals.d.ts"
 		}
 	},
 	"scripts": {
 		"build": "shx rm -rf dist && tsc && api-extractor run --local --verbose && npm run build:cleanup",
-		"build:cleanup": "shx mv dist/index.d.ts ./index.d.ts.tmp && shx mv dist/index.d.ts.map ./index.d.ts.map.tmp && shx rm -rf dist && shx mkdir dist && shx mv ./index.d.ts.tmp dist/index.d.ts && shx mv ./index.d.ts.map.tmp dist/index.d.ts.map",
+		"build:cleanup": "shx mv dist/index.d.ts ./index.d.ts.tmp && shx mv dist/index.d.ts.map ./index.d.ts.map.tmp && shx rm -rf dist && shx mkdir dist && shx mv ./index.d.ts.tmp dist/index.d.ts && shx mv ./index.d.ts.map.tmp dist/index.d.ts.map && shx cp src/globals.d.ts dist/globals.d.ts",
 		"test": "vitest run",
 		"test:types": "vitest typecheck regex-types.spec.ts"
 	},

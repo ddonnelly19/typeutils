@@ -10,13 +10,15 @@ type CleanString<T> = T extends `${infer S}` ? S : never;
 type ComputeTuple<T extends readonly any[]> =
 	{ [K in keyof T]: T[K] } extends infer R extends readonly any[] ? R : T;
 
-/** Splits a string-like value into an immutable readonly tuple using separator S. */
+/** 🪢 Splits a string-like value into an array/tuple using separator S. */
 export type Split<A, S extends string = ","> =
 	A extends null | undefined | never ? readonly [] :
 	A extends `${infer A1}${S}${infer A2}` ? ComputeTuple<readonly [Stringify<Trim<A1>>, ...Split<A2, S>]> :
 	A extends `${infer A1}` ? readonly [Stringify<Trim<A1>>] :
-	A extends readonly any[] ? readonly Stringify<A[number]>[] :
+	// 💡 Match array mutability exactly! Changed from 'readonly Stringify<T>[]' to 'Stringify<T>[]'
+	A extends ArrayString<infer T, S> ? Stringify<T>[] :
 	ReadonlyArray<Stringify<A>>;
+
 
 // ... Keep your existing Trim, Split, Join, and SplitOnce types exactly as they are ...
 
@@ -64,13 +66,57 @@ export type StringToRecord<T extends string, S1 extends string = ",", S2 extends
 		>
 	>;
 
-/** 
- * 📥 Recursive Entry-Tuple to Record Loop
- * 💡 Fix: Uses a direct indexed map to build a flat object literal instantly,
- * completely avoiding complex intersection trees and empty object literal bugs!
+export type RecordToEntriesTuple<TRecord, KeysTuple extends readonly any[]> =
+	KeysTuple extends readonly [infer Head extends string & keyof TRecord, ...infer Tail]
+	? readonly [readonly [Head, TRecord[Head]], ...RecordToEntriesTuple<TRecord, Tail>]
+	: readonly [];
+
+/**
+ * 🏷️ A branded template literal string type that carries design-time metadata 
+ * about an underlying array element type and its specific formatting separator.
  */
-export type TupleEntriesToRecordLoop<T extends readonly [string, any][] | readonly any[]> = 
-  { [K in T[number] as K[0]]: K[1] };
+export type ArrayString<T, S extends string = ","> = string & {
+	readonly __array_element_brand: Stringify<T>;
+	readonly __array_separator_brand: S;
+};
+
+/** 💡 Helper: Identifies if an array is an un-narrowed open generic array list instead of a strict constant tuple */
+/*type IsWideArray<T extends readonly any[]> =
+	number extends T["length"] ? true : false;*/
+
+/** 💡 Helper: Identifies if an array is a strict constant tuple configuration */
+//type IsStrictTuple<T> = T extends readonly [any, ...any[]] ? true : false;
+
+/** 
+ * 📥 1. Query-String Engine: Maps flat string delimiter arrays safely 
+ * 💡 Fix: Destructures the entry array elements to completely prevent key corruption!
+ */
+export type TupleEntriesToRecordLoop<T extends readonly [string, any][] | readonly any[]> =
+	readonly any[] extends T
+	? Record<string, any>
+	: {
+		[K in T[number]as K extends readonly [infer Key extends string, any] ? Key : K extends [infer Key2 extends string, any] ? Key2 : never]:
+		K extends readonly [any, infer Val] ? Val : K extends [any, infer Val2] ? Val2 : never
+	};
+
+/** 📥 2. FromEntries Engine: Safely handles read-only tuple entries arrays */
+export type FromEntriesTupleToRecord<T extends readonly [string, any]> =
+	[T] extends [never]
+	? Record<string, any>
+	: {
+		[K in T as K extends readonly [infer Key extends string, any] ? Key : never]:
+		K extends readonly [any, infer Val] ? Val : never;
+	};
+
+/** 📥 3. Entries Engine: Safely handles reverse mutable tuple pairs from Object.entries */
+export type EntriesTupleToRecord<T extends readonly any[]> =
+	readonly any[] extends T
+	? Record<string, any>
+	: {
+		[K in T[number]as K extends [infer Key extends string, any] ? Key : K extends readonly [infer Key2 extends string, any] ? Key2 : never]:
+		K extends [any, infer Val] ? Val : K extends readonly [any, infer Val2] ? Val2 : never;
+	};
+
 
 /** 
  * Helper loop to assemble pure template literal text strings 
@@ -92,7 +138,7 @@ export type Join<A, S extends string = ","> =
 	: A extends [any, ...any[]] | readonly [any, ...any[]]
 	? CleanString<JoinTextCore<A, S>>
 	: A extends readonly any[]
-	? string
+	? ArrayString<A[number], S> // 💡 Generates the clean branded metadata token for loose open arrays!
 	: "";
 
 type StringifyProperty<T> = T extends undefined
