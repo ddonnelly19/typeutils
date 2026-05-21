@@ -1,0 +1,51 @@
+{
+	"compilerOptions": {
+		/* 🎯 Core Compilation Configuration Target */
+		"target": "ES2022",
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"lib": [
+			"ESNext",
+			"DOM",
+			"DOM.Iterable"
+		],
+		/* 🔒 Strict Type-Checking Rules (Mandatory for your custom types) */
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
+		/* 🛡️ Additional Code Quality Rules */
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true, // Highly recommended for secure array indexing
+		/* 📦 Module & Ecosystem Compatibility */
+		"esModuleInterop": true,
+		"skipLibCheck": false,
+		"forceConsistentCasingInFileNames": true,
+		/* 💾 Build Generation Setup (Speeds up compilation & testing tools) */
+		"moduleDetection": "force",
+		"isolatedModules": true,
+		"types": [
+			"node"
+		],
+		/* 📦 Distribution Build Generation Settings */
+		"declaration": true, // Generates corresponding '.d.ts' type mapping profiles
+		"declarationMap": true, // Maps type files back to your source code for IDE command-clicks
+		"noEmit": false, // Allow the compiler to output files onto the disk
+		"outDir": "dist", // Directs compiled files into a standalone production folder
+		"emitDeclarationOnly": true, // Emits ONLY type declaration definition files (zero JS runtime footprint),
+		"rootDir": "src"
+	},
+	"include": [
+		"src",
+		"src/tests"
+	],
+	"exclude": [
+		"node_modules",
+		"dist"
+	]
+}

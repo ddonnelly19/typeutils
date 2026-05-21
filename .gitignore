@@ -1,0 +1,35 @@
+# 📦 Compiled Production Distribution
+dist/
+out/
+
+# 🔍 Dependencies & Environment-specific caches
+node_modules/
+.pnpm-store/
+.yarn/
+
+# 🧪 Test Reports, Coverage, & Caches
+coverage/
+.vitest/
+*.log
+*.log.*
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 🛠️ IDE, Editors, & Operating System Files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# 💾 Local Runtime Configurations / Backups
+.env
+.env.local
+.env.*.local

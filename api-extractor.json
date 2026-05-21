@@ -1,0 +1,36 @@
+{
+	"$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+	"mainEntryPointFilePath": "<projectFolder>/dist/index.d.ts",
+	"compiler": {
+		"tsconfigFilePath": "<projectFolder>/tsconfig.json"
+	},
+	"apiReport": {
+		"enabled": true
+	},
+	"docModel": {
+		"enabled": true
+	},
+	"dtsRollup": {
+		"enabled": true,
+		"untrimmedFilePath": "<projectFolder>/dist/index.d.ts"
+	},
+	"messages": {
+		"compilerMessageReporting": {
+			"default": {
+				"logLevel": "warning"
+			}
+		},
+		"extractorMessageReporting": {
+			"default": {
+				"logLevel": "warning"
+			},
+			/* 💡 Mute warnings and instruct the bundler to automatically inline hidden dependencies */
+			"ae-forgotten-export": {
+				"logLevel": "none"
+			},
+			"ae-missing-release-tag": {
+				"logLevel": "none"
+			}
+		}
+	}
+}
