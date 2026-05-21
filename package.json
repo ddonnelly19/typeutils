@@ -11,7 +11,7 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc && api-extractor run --local --verbose && npm run build:cleanup",
+		"build": "shx rm -rf dist && tsc && api-extractor run --local --verbose && npm run build:cleanup",
 		"build:cleanup": "shx mv dist/index.d.ts ./index.d.ts.tmp && shx mv dist/index.d.ts.map ./index.d.ts.map.tmp && shx rm -rf dist && shx mkdir dist && shx mv ./index.d.ts.tmp dist/index.d.ts && shx mv ./index.d.ts.map.tmp dist/index.d.ts.map",
 		"test": "vitest run",
 		"test:types": "vitest typecheck regex-types.spec.ts"
@@ -21,6 +21,7 @@
 	"license": "ISC",
 	"type": "module",
 	"devDependencies": {
+		"@microsoft/api-extractor": "^7.58.7",
 		"@types/node": "^25.9.1",
 		"shx": "^0.4.0",
 		"typescript": "^6.0.3",

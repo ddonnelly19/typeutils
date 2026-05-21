@@ -24,13 +24,20 @@ type SplitOnce<A extends string, S extends string = "="> = A extends `${infer A1
 	? readonly [Trim<A1>, Trim<A2>]
 	: readonly [Stringify<Trim<A>>, null];
 
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
+export type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (k: infer I) => void ? I : never;
 
-type Compute<T> = T extends Function
+export type Compute<T> = T extends Function
 	? T
 	: T extends Record<string, any>
 	? { [K in keyof T]: Compute<T[K]> }
 	: T;
+
+/** 
+* 🪢 Converts a two-item tuple into a single-property record.
+*/
+export type ArrayToRecord<T extends readonly [string, any]> = {
+	[K in T[0] & string]: T[1]
+};
 
 /** 
  * 💡 Safe Object Converter
@@ -44,7 +51,7 @@ type SingleTupleToRecord<T extends readonly [string, any]> = {
  * 📥 Recursive Tuple-to-Record Loop
  * Walks your strict split tuple position-by-position to preserve explicit value bindings
  */
-type TupleToRecordLoop<T extends readonly any[], S2 extends string> =
+export type TupleToRecordLoop<T extends readonly any[], S2 extends string> =
 	T extends readonly [infer First extends string, ...infer Rest]
 	? SingleTupleToRecord<SplitOnce<First, S2>> & TupleToRecordLoop<Rest, S2>
 	: unknown;
@@ -56,6 +63,14 @@ export type StringToRecord<T extends string, S1 extends string = ",", S2 extends
 			TupleToRecordLoop<Split<T, S1>, S2>
 		>
 	>;
+
+/** 
+ * 📥 Recursive Entry-Tuple to Record Loop
+ * 💡 Fix: Uses a direct indexed map to build a flat object literal instantly,
+ * completely avoiding complex intersection trees and empty object literal bugs!
+ */
+export type TupleEntriesToRecordLoop<T extends readonly [string, any][] | readonly any[]> = 
+  { [K in T[number] as K[0]]: K[1] };
 
 /** 
  * Helper loop to assemble pure template literal text strings 
@@ -89,7 +104,7 @@ type StringifyProperty<T> = T extends undefined
 	: Stringify<T>;
 
 /** Helper: Intersects functions to safely convert an object's keys into an ordered tuple array stream */
-type KeysToTuple<T, Acc extends readonly any[] = readonly []> =
+export type KeysToTuple<T, Acc extends readonly any[] = readonly []> =
 	UnionToIntersection<
 		T extends any ? (key: T) => void : never
 	> extends (key: infer Last) => void

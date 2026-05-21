@@ -1,4 +1,4 @@
-import { Join, Split, Trim, TrimLeft, TrimRight } from './string-utils.js';
+import { Join, KeysToTuple, Split, Trim, TrimLeft, TrimRight, TupleEntriesToRecordLoop } from './string-utils.js';
 import { ReplaceFirst, Replace } from './string.js';
 import { DeepStringify } from './stringify.js';
 import { DeepUnstringify } from './unstringify.js';
@@ -15,6 +15,11 @@ export * from './string-utils.js';
 export * from './stringify.js'
 export * from './unstringify.js'
 
+
+type RecordToEntriesTuple<TRecord, KeysTuple extends readonly any[]> =
+	KeysTuple extends readonly [infer Head extends string & keyof TRecord, ...infer Tail]
+	? readonly [readonly [Head, TRecord[Head]], ...RecordToEntriesTuple<TRecord, Tail>]
+	: readonly [];
 
 // 🔌 Global declarations live natively at the entrypoint for seamless rollup matching
 declare global {
@@ -92,5 +97,29 @@ declare global {
 
 		/** Intercepts array stringifications on mutable tuple configurations. */
 		toString<This extends Array<T>>(this: This): Join<This, ",">;
+	}
+
+	interface ObjectConstructor {
+		/**
+		 * Strongly typed Object.fromEntries overload.
+		 * Maps an iterable stream of literal key-value tuples into a flat, structured interface record type.
+		 */
+		fromEntries<T extends readonly [string, any]>(
+			entries: readonly T[] | T[]
+		): TupleEntriesToRecordLoop<readonly T[]>;
+
+		/** Fallback configuration to process standard open stream iterables */
+		fromEntries<K extends string, V>(entries: Iterable<[K, V]>): Record<K, V>;
+
+		/**
+		* 📦 Strongly typed Object.entries overload.
+		* Extracts an object literal configuration tree and transforms it into a strict, ordered tuple of entries.
+		*/
+		entries<T extends Record<string, any>>(
+			o: T
+		): RecordToEntriesTuple<
+			T,
+			KeysToTuple<keyof T & string>
+		>;
 	}
 }

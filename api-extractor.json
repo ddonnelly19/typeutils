@@ -5,10 +5,10 @@
 		"tsconfigFilePath": "<projectFolder>/tsconfig.json"
 	},
 	"apiReport": {
-		"enabled": true
+		"enabled": false
 	},
 	"docModel": {
-		"enabled": true
+		"enabled": false
 	},
 	"dtsRollup": {
 		"enabled": true,
