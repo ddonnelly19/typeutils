@@ -208,7 +208,7 @@ export type StringType<
 	T extends NarrowablePayload,
 	V extends string = Extract<ObjectToStringLiteral<T>, string>,
 	I = IStringType<T, V>
-> = V & I; // Unified single branch intersection 🎯
+> = V & I; // Unified single branch intersection 
 
 /** 🔌 Internal metadata brand interface supporting native JavaScript stringification hooks */
 export interface IStringType<T, V extends string = Extract<ObjectToStringLiteral<T>, string>> extends String {
@@ -216,6 +216,14 @@ export interface IStringType<T, V extends string = Extract<ObjectToStringLiteral
 	[Symbol.toPrimitive](hint: "string" | "number" | "default"): V;
 	toString(): V;
 }
+
+// 1. Create a globally unique symbol for the branding property
+declare const __brand: unique symbol;
+
+// 2. Define the generic utility type
+export type Brand<T, TBrand extends string = string> = T & {
+	readonly [__brand]: TBrand
+};
 
 
 /**
@@ -252,14 +260,14 @@ export type ParseInt<S extends string> =
 	: ParseIntCore<S> extends "-"
 	? never
 	: ParseIntCore<S> extends `${infer N extends number}` ? N : never;
-	
+
 /** 
  * 🔂 Lookahead-free split resolver gateway.
  * Extracts underlying string primitives from branded nominal instances without tracing global prototypes.
  */
-export type ResolveSplit<T, S extends string> = 
-  T extends IStringType<any, infer V extends string>
-    ? Split<V, S>
-    : T extends string
-      ? Split<T, S>
-      : readonly string[];
+export type ResolveSplit<T, S extends string> =
+	T extends IStringType<any, infer V extends string>
+	? Split<V, S>
+	: T extends string
+	? Split<T, S>
+	: readonly string[];

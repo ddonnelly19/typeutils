@@ -135,9 +135,11 @@ declare global {
 		 * Strongly typed String() constructor factory overload.
 		 * 💡 Uses contextual literal narrowing to turn any primitive payload or object shape into its strict string type!
 		 */
-		<T extends string | number | boolean | object | bigint | null | undefined>(
+		<T>(
 			value?: T
-		): import("typeutils").Stringify<T>;
+		): import("typeutils").Stringify<T> extends never
+			? string
+			: import("typeutils").Stringify<T>;
 	}
 
 	interface BooleanConstructor {

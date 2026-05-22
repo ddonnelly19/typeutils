@@ -227,6 +227,20 @@ describe("🏭 Global Constructor Factory Function Overloads Spec", () => {
 			// ✅ Pass 🎉 Follows your Stringify engine rules to evaluate safely down to undefined/empty types!
 			expectTypeOf(emptyStringifiedResult).toEqualTypeOf<undefined>();
 		});
+		
+		it("should handle an unknown type", () => {
+			const value: unknown = "dynamic-runtime-value";
+			const unknownStringResult = String(value);
+			expectTypeOf(unknownStringResult).toEqualTypeOf<string>();
+		});
+		
+		it("should handle {} type", () => {
+			const value: unknown = "dynamic-runtime-value";
+			const value2 = value || "";
+			const unknownStringResult = String(value2);
+			expectTypeOf(unknownStringResult).toEqualTypeOf<string>();
+	
+		});
 	});
 
 	describe("☯️ Boolean() Factory Narrowing", () => {

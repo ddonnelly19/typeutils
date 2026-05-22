@@ -34,12 +34,13 @@ type DistributeUnion<T> = T extends any ? StringifyCore<T> : never;
  * 🪞 Converts `T` to its template-literal string representation.
  * Targets primitive unions safely without distributing top-level object shapes.
  */
-export type Stringify<T> = IsExactly<T, string> extends true ? string
+export type Stringify<T> = T extends string | number | boolean | object | bigint | null | undefined ? IsExactly<T, string> extends true ? string
 	: IsExactly<T, number> extends true ? `${number}`
 	: IsExactly<T, boolean> extends true ? `${boolean}`
 	: [T] extends [StringifiablePrimitive | null | undefined]
 	? DistributeUnion<T> // Safely distribute primitive-only value states
-	: StringifyCore<T>;  // Preserve intact schemas and objects
+	: StringifyCore<T>:  // Preserve intact schemas and objects
+	(T & string);
 
 /**
  * Recursive Deep Stringifier Type Engine
