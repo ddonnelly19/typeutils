@@ -1,5 +1,10 @@
 type Something = string | number | boolean | object | bigint | null | undefined;
 
+type SplitReturn<T extends string, S extends string> =
+	T extends { [Symbol.toPrimitive](hint: "string" | "number" | "default"): infer V extends string }
+		? import("typeutils").Split<V, S>
+		: import("typeutils").Split<T, S>;
+
 // 🔌 Global declarations live natively at the entrypoint for seamless rollup matching
 declare global {
 	interface JSON {
@@ -23,12 +28,12 @@ declare global {
 		 * to eliminate prototype extraction races and clear out circular reference loops!
 		 */
 		split<
-			T extends string | import("typeutils").IStringType<any, any>,
+			T extends string,
 			S extends string
 		>(
 			this: T,
 			separator: S
-		): import("typeutils").ResolveSplit<T, S>;
+		): SplitReturn<T, S>;
 		
 
 		/**

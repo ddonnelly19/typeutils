@@ -1,4 +1,4 @@
-import { StrictIPv4, StrictDateTime } from "./primitives.js";
+import { IPAddressv4String, DateTimeString } from "./primitives.js";
 
 type Unpad<S extends string> = S extends `0${infer Rest}` ? Rest : S;
 type CastNumber<S extends string> = S extends `${infer N extends number}` ? N : never;
@@ -9,13 +9,13 @@ export type UnwrapIP<T extends string> = T extends `${infer O1}.${infer O2}.${in
 export type UnwrapDateTime<T extends string> = T extends `${infer Y}-${infer M}-${infer D} ${infer H}:${infer Min}:${infer S}`
 	? { year: CastNumber<Unpad<Y>>; month: CastNumber<Unpad<M>>; day: CastNumber<Unpad<D>>; hour: CastNumber<Unpad<H>>; minute: CastNumber<Unpad<Min>>; second: CastNumber<Unpad<S>> } : never;
 
-export function isStrictIP(val: string): val is StrictIPv4<typeof val> {
+export function isStrictIP(val: string): val is IPAddressv4String<typeof val> {
 	const octets = val.split(".");
 	if (octets.length !== 4) return false;
 	return octets.every(o => { const n = Number(o); return Number.isInteger(n) && n >= 0 && n <= 255 && String(n) === o; });
 }
 
-export function isStrictDateTime(val: string): val is StrictDateTime<typeof val> {
+export function isStrictDateTime(val: string): val is DateTimeString<typeof val> {
   // 1. Structural Validation (YYYY-MM-DD HH:mm:ss)
   const structuralRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2]\d|3[0-1]) (0\d|1\d|2[0-3]):[0-5]\d:[0-5]\d$/;
   if (!structuralRegex.test(val)) return false;

@@ -41,8 +41,7 @@
 		"rootDir": "src"
 	},
 	"include": [
-		"src",
-		"src/tests"
+		"src"
 	],
 	"exclude": [
 		"node_modules",

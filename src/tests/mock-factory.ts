@@ -1,18 +1,18 @@
-import { StrictIPv4, StrictDateTime, StrictDate, StrictTime, StrictIntegerStr } from "../primitives.js";
+import { IPAddressv4String, DateTimeString, DateString, TimeString, IntegerString } from "../primitives.js";
 
 export const MockFactory = {
 	/**
 	 * Generates a structurally valid random IPv4 Address
 	 */
-	ip(): StrictIPv4<string> {
+	ip(): IPAddressv4String<string> {
 		const r = () => Math.floor(Math.random() * 256);
-		return `${r()}.${r()}.${r()}.${r()}` as StrictIPv4<string>;
+		return `${r()}.${r()}.${r()}.${r()}` as IPAddressv4String<string>;
 	},
 
 	/**
 	 * Generates a valid formatted DateTime string based on a Date object
 	 */
-	dateTime(baseDate = new Date()): StrictDateTime<string> {
+	dateTime(baseDate = new Date()): DateTimeString<string> {
 		const pad = (n: number) => String(n).padStart(2, "0");
 		const yyyy = baseDate.getFullYear();
 		const MM = pad(baseDate.getMonth() + 1);
@@ -20,33 +20,33 @@ export const MockFactory = {
 		const hh = pad(baseDate.getHours());
 		const mm = pad(baseDate.getMinutes());
 		const ss = pad(baseDate.getSeconds());
-		return `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}` as StrictDateTime<string>;
+		return `${yyyy}-${MM}-${dd} ${hh}:${mm}:${ss}` as DateTimeString<string>;
 	},
 
 	/**
    * Generates a valid isolated Date string
    */
-	date(baseDate = new Date()): StrictDate<string> {
+	date(baseDate = new Date()): DateString<string> {
 		// Cast to string first so TypeScript allows standard runtime string methods
 		const dateTimeStr = MockFactory.dateTime(baseDate) as string;
-		return dateTimeStr.split(" ")[0] as StrictDate<string>;
+		return dateTimeStr.split(" ")[0] as DateString<string>;
 	},
 
 	/**
 	 * Generates a valid isolated Time string
 	 */
-	time(baseDate = new Date()): StrictTime<string> {
+	time(baseDate = new Date()): TimeString<string> {
 		// Cast to string first so TypeScript allows standard runtime string methods
 		const dateTimeStr = MockFactory.dateTime(baseDate) as string;
-		return dateTimeStr.split(" ")[1] as StrictTime<string>;
+		return dateTimeStr.split(" ")[1] as TimeString<string>;
 	},
 
 	/**
 	 * Generates a valid whole number string up to 5 digits
 	 */
-	integerStr(min = -9999, max = 99999): StrictIntegerStr<string> {
+	integerStr(min = -9999, max = 99999): IntegerString<string> {
 		const val = Math.floor(Math.random() * (max - min + 1)) + min;
-		return String(val) as StrictIntegerStr<string>;
+		return String(val) as IntegerString<string>;
 	},
 
 	/**

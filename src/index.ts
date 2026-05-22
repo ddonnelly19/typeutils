@@ -8,7 +8,7 @@ export type { StrictPaths, DeepOmit } from './omit-paths.js';
 export { deepPick } from './pick.js';
 export type { DeepPick } from './pick.js';
 export { assertDate, assertTime, assertDateTime, assertIntegerStr, assertIP } from './primitives.js';
-export type { IsYear, IsMonth, IsDay, StrictDate, StrictTime, StrictDateTime, StrictIntegerStr, StrictIPv4 } from './primitives.js';
+export type { DateString, TimeString, DateTimeString, IntegerString, IPAddressv4String } from './primitives.js';
 export { assertSecureString } from './regex-engine.js';
 export type { MatchRegexFlattened, RegexAndLength } from './regex-engine.js';
 export type { TrimLeft, TrimRight, Trim, Split, UnionToIntersection, Compute, ArrayToRecord, TupleToRecordLoop, StringToRecord, RecordToEntriesTuple, TupleEntriesToRecordLoop, Join, KeysToTuple, RecordToString, ArrayString, FromEntriesTupleToRecord, EntriesTupleToRecord, ConcatTuple, StringType, IStringType, IsTruthy, ParseInt, ResolveSplit  } from './string-utils.js';
