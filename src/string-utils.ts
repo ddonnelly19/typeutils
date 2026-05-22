@@ -1,6 +1,5 @@
 import { Stringify } from "./stringify.js";
 
-
 export type TrimLeft<S extends string> = S extends ` ${infer R}` ? TrimLeft<R> : S;
 export type TrimRight<S extends string> = S extends `${infer R} ` ? TrimRight<R> : S;
 export type Trim<S extends string> = TrimLeft<TrimRight<S>>;
@@ -99,8 +98,14 @@ export type TupleEntriesToRecordLoop<T extends readonly [string, any][] | readon
 		K extends readonly [any, infer Val] ? Val : K extends [any, infer Val2] ? Val2 : never
 	};
 
-/** 📥 2. FromEntries Engine: Safely handles read-only tuple entries arrays */
-export type FromEntriesTupleToRecord<T extends readonly [string, any]> =
+type AllowedScalar = string | number | boolean | object | bigint | null | undefined;
+
+/** 
+ * 📥 FromEntries Engine: Maps flat input key-value tuple arrays safely.
+ * 💡 Upgrade: Replacing 'readonly any[]' with an explicit allowed-scalar union matrix
+ * prevents internal element boundaries from losing context during advanced cascading maps!
+ */
+export type FromEntriesTupleToRecord<T extends readonly [string, AllowedScalar]> =
 	[T] extends [never]
 	? Record<string, any>
 	: {
@@ -173,3 +178,88 @@ export type RecordToString<TRecord, D extends string = "=", S extends string = "
 		>,
 		S
 	>;
+
+/** 
+ * 🪢 Recursive Concat Tuple Loop
+ * 💡 Fix: Explicitly walks your rest tuple parameters step-by-step to compute 
+ * a flat string literal without triggering any wide open array fallback guards!
+ */
+export type ConcatTuple<A extends readonly any[]> =
+	A extends readonly [infer Head, ...infer Tail]
+	? `${Stringify<Head>}${ConcatTuple<Tail>}`
+	: "";
+
+type NarrowablePayload = string | number | boolean | bigint | object | null | undefined;
+
+type ObjectToStringLiteral<T> = T extends string
+	? string extends T
+	? string
+	: T
+	: T extends number | boolean | bigint | null | undefined
+	? Stringify<T>
+	: string;
+
+/**
+ * 🏷️ Smart Branded String Primitive Wrapper.
+ * 💡 Fix: Consolidates signature layout to a unified intersection (V & I) 
+ * to prevent method-splitting union cascades across global overloads!
+ */
+export type StringType<
+	T extends NarrowablePayload,
+	V extends string = Extract<ObjectToStringLiteral<T>, string>,
+	I = IStringType<T, V>
+> = V & I; // Unified single branch intersection 🎯
+
+/** 🔌 Internal metadata brand interface supporting native JavaScript stringification hooks */
+export interface IStringType<T, V extends string = Extract<ObjectToStringLiteral<T>, string>> extends String {
+	readonly _type: T;
+	[Symbol.toPrimitive](hint: "string" | "number" | "default"): V;
+	toString(): V;
+}
+
+
+/**
+ * 🕵️ Type-level truthiness engine mirroring JavaScript's native runtime evaluation rules.
+ * Collapses known falsy literals to false, while computing all other valid structures as true.
+ */
+export type IsTruthy<T> = T extends false | 0 | -0 | 0n | "" | null | undefined
+	? false
+	: true;
+
+/** Helper: Scans left-to-right and discards everything as soon as a non-digit character hits */
+type ConsumeDigits<S extends string, Acc extends string = ""> =
+	S extends `${infer Head}${infer Tail}`
+	? Head extends "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+	? ConsumeDigits<Tail, `${Acc}${Head}`>
+	: Acc // 💡 Fix: Stop scanning immediately and return what we have so far!
+	: Acc;
+
+/** Helper: Isolates optional leading signs before handing the block to the digit consumer */
+type ParseIntCore<S extends string> =
+	S extends `+${infer Rest}`
+	? ConsumeDigits<Rest>
+	: S extends `-${infer Rest}`
+	? `-${ConsumeDigits<Rest>}`
+	: ConsumeDigits<S>;
+
+/** 
+ * 🔢 Type-level parseInt engine.
+ * Strips trailing units (like "px" or "-fallback") and converts the isolated string into a literal number type.
+ */
+export type ParseInt<S extends string> =
+	ParseIntCore<S> extends ""
+	? never
+	: ParseIntCore<S> extends "-"
+	? never
+	: ParseIntCore<S> extends `${infer N extends number}` ? N : never;
+	
+/** 
+ * 🔂 Lookahead-free split resolver gateway.
+ * Extracts underlying string primitives from branded nominal instances without tracing global prototypes.
+ */
+export type ResolveSplit<T, S extends string> = 
+  T extends IStringType<any, infer V extends string>
+    ? Split<V, S>
+    : T extends string
+      ? Split<T, S>
+      : readonly string[];

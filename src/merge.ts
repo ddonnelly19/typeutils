@@ -51,3 +51,13 @@ export function deepMerge<T, U>(target: T, source: U): DeepMerge<T, U> {
 
 	return output as DeepMerge<T, U>;
 }
+
+/**
+ * 🪢 Variadic type-safe path assembly utility.
+ * Guarantees every single argument passed into the function maps to its exact literal constant.
+ */
+export function buildPath<
+	T extends readonly (string | number | boolean | object)[]
+>(...segments: T): import("typeutils").ConcatTuple<T> {
+	return segments.join("") as any;
+}

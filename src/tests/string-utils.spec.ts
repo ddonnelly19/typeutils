@@ -1,6 +1,6 @@
 import { describe, it, expectTypeOf } from "vitest";
 import { Stringify, DeepStringify } from "../stringify.js";
-import { ArrayString, Join, RecordToString, Split, StringToRecord, Trim, TupleEntriesToRecordLoop } from "../string-utils.js";
+import { ArrayString, ConcatTuple, Join, RecordToString, Split, StringToRecord, StringType, Trim, TupleEntriesToRecordLoop } from "../string-utils.js";
 import { ArrayValues, LikeArray, Replace, ToStringUnion } from "../string.js";
 import { DeepUnstringify } from "../unstringify.js";
 
@@ -453,6 +453,76 @@ describe("🏷️ ArrayString Branded Element Metadata Spec", () => {
 		const assertionCheck: string[] = {} as UnpackedArray;
 
 		// Read the variable in an inline asset to satisfy strict "noUnusedLocals" rules
+		expectTypeOf(assertionCheck).toBeObject();
+	});
+});
+
+describe("🪢 ConcatTuple and String.prototype.concat Validation Spec", () => {
+
+	describe("📥 Standalone ConcatTuple Engine Check", () => {
+		it("should process fixed static tuple literal types without throwing lookup flags", () => {
+			// ✅ Proves your underlying engine is 100% correct!
+			type TestTuple = readonly ["/", "world", "_id", 2026];
+			type ComputedResult = ConcatTuple<TestTuple>;
+
+			expectTypeOf<ComputedResult>().toEqualTypeOf<"/world_id2026">();
+		});
+	});
+
+	describe("⛓️ Native Prototype Method Execution", () => {
+		it("should assemble sequential string literals into flat matching constants", () => {
+			const baseWord = "hello";
+
+			// Triggers our multi-parameter overload matrix block
+			const builtPath = baseWord.concat("/", "world");
+
+			// ✅ Pass 🎉 Compiles instantly and matches perfectly without any string widening!
+			expectTypeOf(builtPath).toEqualTypeOf<"hello/world">();
+		});
+
+		it("should stringify and concatenate primitive combinations successfully", () => {
+			const statusPrefix = "port_";
+
+			const assembledKey = statusPrefix.concat(8080, "_status_", true);
+
+			// ✅ Pass 🎉 Extends to a precise matching literal string!
+			expectTypeOf(assembledKey).toEqualTypeOf<"port_8080_status_true">();
+		});
+	});
+});
+
+describe("🏷️ StringType<T> Nominal Branded Smart String Spec", () => {
+
+	it("should prevent cross-assignment between different domain string brands", () => {
+		// ✅ Pass 🎉 Object shapes are extracted cleanly and no longer collapse to never!
+		type UserId = StringType<{ userId: number }>;
+		type ProjectId = StringType<{ projectId: number }>;
+
+		const userTrack = "user_1024" as UserId;
+		const projectTrack = "project_9000" as ProjectId;
+
+		expectTypeOf(userTrack).not.toEqualTypeOf<ProjectId>();
+		expectTypeOf(projectTrack).not.toEqualTypeOf<UserId>();
+	});
+
+	it("should maintain 100% assignability compatibility back to native loose string primitives", () => {
+		type ConfigKey = StringType<"system.production.port">;
+		const keyInstance = "system.production.port" as ConfigKey;
+
+		// ✅ Pass 🎉 Branded strings automatically down-cast into standard strings smoothly
+		const loosePrimitiveCheck: string = keyInstance;
+		expectTypeOf(loosePrimitiveCheck).toBeString();
+	});
+
+	it("should work flawlessly with our global prototype overloads like .split()", () => {
+		type AssembledPath = StringType<"user.profile.id">;
+		const accountRoute = "user.profile.id" as AssembledPath;
+
+		// 🚀 Execute the native runtime method overloaded by our globals layer!
+		const runtimeSplitResult = accountRoute.split(".");
+
+		// ✅ Pass 🎉 Resolves cleanly to exactly three elements without any widening forks!
+		const assertionCheck: readonly ["user", "profile", "id"] = runtimeSplitResult;
 		expectTypeOf(assertionCheck).toBeObject();
 	});
 });

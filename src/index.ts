@@ -1,7 +1,7 @@
 export { createInputFieldHelper, createPrefixedFieldHelper } from './autocomplete.js';
 export { isStrictIP, isStrictDateTime } from './converters.js';
 export type { UnwrapIP, UnwrapDateTime } from './converters.js';
-export { deepMerge } from './merge.js';
+export { deepMerge, buildPath } from './merge.js';
 export type { DeepMerge } from './merge.js';
 export { deepOmit } from './omit-paths.js';
 export type { StrictPaths, DeepOmit } from './omit-paths.js';
@@ -11,7 +11,7 @@ export { assertDate, assertTime, assertDateTime, assertIntegerStr, assertIP } fr
 export type { IsYear, IsMonth, IsDay, StrictDate, StrictTime, StrictDateTime, StrictIntegerStr, StrictIPv4 } from './primitives.js';
 export { assertSecureString } from './regex-engine.js';
 export type { MatchRegexFlattened, RegexAndLength } from './regex-engine.js';
-export type { TrimLeft, TrimRight, Trim, Split, UnionToIntersection, Compute, ArrayToRecord, TupleToRecordLoop, StringToRecord, RecordToEntriesTuple, TupleEntriesToRecordLoop, Join, KeysToTuple, RecordToString, ArrayString, FromEntriesTupleToRecord, EntriesTupleToRecord  } from './string-utils.js';
+export type { TrimLeft, TrimRight, Trim, Split, UnionToIntersection, Compute, ArrayToRecord, TupleToRecordLoop, StringToRecord, RecordToEntriesTuple, TupleEntriesToRecordLoop, Join, KeysToTuple, RecordToString, ArrayString, FromEntriesTupleToRecord, EntriesTupleToRecord, ConcatTuple, StringType, IStringType, IsTruthy, ParseInt, ResolveSplit  } from './string-utils.js';
 export type { ToStringUnion, ArrayValues, LikeArray, Replace, ReplaceFirst } from './string.js';
 export type { Stringify, DeepStringify } from './stringify.js';
 export type { DeepUnstringify } from './unstringify.js';

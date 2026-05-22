@@ -1,3 +1,5 @@
+type Something = string | number | boolean | object | bigint | null | undefined;
+
 // 🔌 Global declarations live natively at the entrypoint for seamless rollup matching
 declare global {
 	interface JSON {
@@ -6,25 +8,33 @@ declare global {
 			reviver?: (this: any, key: string, value: any) => any
 		): import("typeutils").DeepUnstringify<TargetSchema, TargetSchema>;
 
-		stringify<T>(
+		stringify<T extends Something>(
 			value: T,
 			replacer?: (this: any, key: string, value: any) => any,
 			space?: string | number
-		): import("typeutils").DeepStringify<T>;
+		): Extract<import("typeutils").DeepStringify<T>, string>;
 	}
 
 	/* 🚀 OVERLOAD METHOD PRIORITIZATION GATEWAYS */
 	interface String {
 		/**
 		 * Overloaded runtime split compiler checker.
-		 * 💡 Uses polymorphic 'this' tracking to capture the exact template literal value!
+		 * 💡 Fix: Delegates signature evaluations directly to ResolveSplit 
+		 * to eliminate prototype extraction races and clear out circular reference loops!
 		 */
-		split<T extends string, S extends string>(this: T, separator: S): import("typeutils").Split<T, S>;
+		split<
+			T extends string | import("typeutils").IStringType<any, any>,
+			S extends string
+		>(
+			this: T,
+			separator: S
+		): import("typeutils").ResolveSplit<T, S>;
+		
 
 		/**
-	* 🪓 Overloaded runtime replace compiler checker.
-	* Captures string literal types and dynamically infers the exact replaced output string type!
-	*/
+		* 🪓 Overloaded runtime replace compiler checker.
+		* Captures string literal types and dynamically infers the exact replaced output string type!
+		*/
 		replace<T extends string, S extends string, D extends string>(
 			this: T,
 			searchValue: S,
@@ -52,6 +62,9 @@ declare global {
 		trim<T extends string>(this: T): import("typeutils").Trim<T>;
 		trimStart<T extends string>(this: T): import("typeutils").TrimLeft<T>;
 		trimEnd<T extends string>(this: T): import("typeutils").TrimRight<T>;
+
+		/** 🪢 Strongly typed String.prototype.concat overload matrix */
+		concat<T extends string, T1 extends readonly Something[]>(this: T, ...obj: T1): `${T}${import("typeutils").ConcatTuple<T1>}`;
 	}
 
 	interface ReadonlyArray<T> {
@@ -67,7 +80,7 @@ declare global {
 
 	interface Array<T> {
 		/** Fallback string representation tracking open, mutable arrays. */
-		[Symbol.toPrimitive](hint: "string" | "default"): string;
+		[Symbol.toPrimitive]<This extends Array<T>>(this: This, hint: "string" | "default"): import("typeutils").Join<This, ",">;
 
 		/** Computes the exact delimiter-joined template string literal of a mutable tuple array at compile time. */
 		join<This extends Array<T>, S extends string = ",">(this: This, separator?: S): import("typeutils").Join<This, S>;
@@ -98,7 +111,46 @@ declare global {
 			T,
 			import("typeutils").KeysToTuple<keyof T & string>
 		>;
+
+		keys<T extends Record<string, any>>(o: T): Extract<keyof T, string>[]
 	}
+
+	interface NumberConstructor {
+		/**
+		 * Strongly typed Number() constructor factory overload.
+		 * 💡 Parses stringified numeric template literals and infers the narrow number type constraint!
+		 */
+		<T extends number>(value?: `${T}`): T;
+		/** Strongly typed Number.parseInt overload matching the global behavior. */
+		parseInt<S extends string>(string: S, radix?: number): import("typeutils").ParseInt<S>;
+	}
+
+	interface StringConstructor {
+		/**
+		 * Strongly typed String() constructor factory overload.
+		 * 💡 Uses contextual literal narrowing to turn any primitive payload or object shape into its strict string type!
+		 */
+		<T extends string | number | boolean | object | bigint | null | undefined>(
+			value?: T
+		): import("typeutils").Stringify<T>;
+	}
+
+	interface BooleanConstructor {
+		/**
+		 * Strongly typed Boolean() constructor factory overload.
+		 * 💡 Evaluates the exact design-time truthiness of a scalar literal matching JS runtime rules!
+		 */
+		<T extends string | number | boolean | object | bigint | null | undefined>(
+			value?: T
+		): import("typeutils").IsTruthy<T>;
+	}
+
+	/**
+   * Strongly typed global parseInt overload.
+   * 💡 Automatically extracts narrow literal number constants out of strings with trailing units!
+   */
+	function parseInt<S extends string>(string: S, radix?: number): import("typeutils").ParseInt<S>;
+
 }
 
 export { }; 
