@@ -1,6 +1,3 @@
-# 📦 Compiled Production Distribution
-dist/
-out/
 
 # 🔍 Dependencies & Environment-specific caches
 node_modules/
